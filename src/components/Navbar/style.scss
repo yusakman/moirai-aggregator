@@ -1,0 +1,44 @@
+.navbar {
+
+  .navbar-nav {
+    display: flex;
+    justify-content: space-around;
+    .logo {
+      font-size: large;
+      font-weight: 900;
+    }
+
+    .user-address {
+      margin: auto;
+    }
+
+    .user-address:hover {
+      cursor: pointer;
+    }
+  }
+
+  .navbar-nav li {
+    list-style: none;
+    text-decoration: none;
+  }
+
+  .navbar-nav li a {
+    list-style: none;
+    text-decoration: none;
+    color: grey
+  }
+
+  .navbar-nav button {
+    background-color: deepskyblue;
+    border: none;
+    border-radius: 15px;
+    height: 30px;
+    font-size: smaller;
+    font-weight: 600;
+  }
+
+  .navbar-nav button:hover {
+    cursor: pointer;
+    background-color: rgb(178, 221, 242)
+  }
+}
