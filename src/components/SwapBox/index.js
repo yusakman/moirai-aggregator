@@ -26,7 +26,6 @@ const SwapBox = () => {
   return (
     <div className="swap-box">
       <h1>Trade Your Tokens</h1>
-      <p>Pay With</p>
       <SelectToken></SelectToken>
     </div>
   );

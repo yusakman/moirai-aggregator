@@ -1,8 +1,15 @@
 .container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
 
-  .token-from-select {
+  .token-from,
+  .token-to {
+    display: flex;
+  }
+
+  .token-from-select, .token-to-select {
     margin-right: 10px;
   }
 
