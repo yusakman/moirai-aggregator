@@ -1,0 +1,26 @@
+.container {
+  display: flex;
+  justify-content: center;
+
+  .token-from-select {
+    margin-right: 10px;
+  }
+
+  .token-from-input input {
+    // height: 70px;
+  }
+}
+
+.token-item {
+  display: flex;
+  align-items: center;
+}
+
+.token-item img {
+  width: 20px;
+  margin-right: 3px;
+}
+
+.token-item-selected {
+  display: flex;
+}

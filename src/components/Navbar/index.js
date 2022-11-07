@@ -1,7 +1,6 @@
 import "./style.scss";
 import { useEffect, useState } from "react";
 import { Button, Nav, NavItem, NavLink } from "reactstrap";
-import { ethers } from "ethers";
 
 const Navbar = () => {
   const [walletAddress, setWalletAddress] = useState("");
@@ -25,13 +24,13 @@ const Navbar = () => {
     }
   };
 
-  const connectWallet = async () => {
-    if (typeof window.ethereum !== "undefined") {
-        await requestAccount();
+  // const connectWallet = async () => {
+  //   if (typeof window.ethereum !== "undefined") {
+  //       await requestAccount();
 
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-    }
-  }
+  //       const provider = new ethers.providers.Web3Provider(window.ethereum)
+  //   }
+  // }
 
   useEffect(() => {
     if (window.ethereum) {
@@ -40,6 +39,7 @@ const Navbar = () => {
       });
       window.ethereum.on("accountsChanged", async () => {
         window.location.reload();
+        setWalletConnection(false);
       });
     }
   }, []);
