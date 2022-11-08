@@ -4,7 +4,8 @@ import dataTokens from "../../const/data_tokens.json";
 import SelectToken from "../SelectToken";
 import "./style.scss";
 
-const SwapBox = () => {
+const SwapBox = (props) => {
+  // const {walletAddress} = props
   // const [tokens, setTokens] = useState([]);
   // const [tokenAddress, setTokenAddress] = useState([]);
   const tokens = dataTokens.tokens;
@@ -26,7 +27,7 @@ const SwapBox = () => {
   return (
     <div className="swap-box">
       <h1>Trade Your Tokens</h1>
-      <SelectToken></SelectToken>
+      <SelectToken {...props}></SelectToken>
     </div>
   );
 };

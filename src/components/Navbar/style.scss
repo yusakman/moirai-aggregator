@@ -1,11 +1,11 @@
 .navbar {
-
   .navbar-nav {
     display: flex;
     justify-content: space-around;
     .logo {
       font-size: large;
       font-weight: 900;
+      color: rgb(126, 159, 235);
     }
 
     .user-address {
@@ -25,20 +25,31 @@
   .navbar-nav li a {
     list-style: none;
     text-decoration: none;
-    color: grey
+    color: grey;
   }
 
   .navbar-nav button {
-    background-color: deepskyblue;
+    background: rgb(126, 159, 235);
+    background: linear-gradient(
+      0deg,
+      rgba(126, 159, 235, 1) 0%,
+      rgba(138, 255, 240, 1) 100%
+    );
     border: none;
     border-radius: 15px;
     height: 30px;
     font-size: smaller;
     font-weight: 600;
+    color: white;
   }
 
   .navbar-nav button:hover {
     cursor: pointer;
-    background-color: rgb(178, 221, 242)
+    background: rgb(126, 159, 235);
+    background: linear-gradient(
+      0deg,
+      rgb(137, 164, 232) 0%,
+      rgb(161, 254, 241) 100%
+    );
   }
 }
