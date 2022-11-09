@@ -394,7 +394,7 @@ const SelectToken = (props) => {
       .catch((err) => console.log(err));
   };
 
-  const handleSwap = () => {
+  const handleSwap = async () => {
     handleQuote();
     console.log("Quote is", quote);
     let fromToken = quote.fromToken.address;
@@ -419,8 +419,8 @@ const SelectToken = (props) => {
       .get(`https://api.1inch.io/v4.0/56/swap`, { params })
       .then((tx) => {
         console.log("Processing tx", tx.data);
-        setSwapData(tx.data.tx);
-        signTx();
+          setSwapData(tx.data.tx);
+          signTx();
       })
       .catch((err) => console.log(err));
   };
