@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./style.scss";
 
 import "primeicons/primeicons.css";
@@ -16,13 +16,18 @@ import BigNumber from "bignumber.js";
 
 const SelectToken = (props) => {
   const { walletAddress } = props;
+  const web3 = new Web3(Web3.givenProvider);
 
   const [selectedTokenFrom, setSelectedTokenFrom] = useState(null);
   const [selectedTokenTo, setSelectedTokenTo] = useState(null);
   const [tokens, setTokens] = useState([]);
   const [amountFrom, setAmountFrom] = useState("");
   const [amountTo, setAmountTo] = useState("");
-  const [statusTx, setStatusTx] = useState(false);
+  const [confirmTx, setStatusConfirmTx] = useState(false);
+  const [quote, setQuote] = useState({});
+  const [swapData, setSwapData] = useState({});
+  const [success, setSuccess] = useState(false);
+  const [txHash, setTxHash] = useState("");
 
   const data = dataTokens.tokens;
   const tokenAddress = Object.keys(data);
@@ -31,7 +36,7 @@ const SelectToken = (props) => {
     const tokenArr = [];
     {
       tokenAddress.map((item) => {
-        tokenArr.push(data[`${item}`]);
+        return tokenArr.push(data[`${item}`]);
       });
     }
     setTokens(tokenArr);
@@ -87,6 +92,22 @@ const SelectToken = (props) => {
     );
   };
 
+  const signTx = async () => {
+    const receit = await web3.eth.sendTransaction({
+      from: swapData.from,
+      to: swapData.to,
+      data: swapData.data,
+      value: swapData.value,
+      gasPrice: swapData.gasPrice,
+    });
+    if (receit.status) {
+      setStatusConfirmTx(false);
+      setSuccess(true);
+      setTxHash(`https://bscscan.com/tx/${receit.transactionHash}`)
+    }
+    console.log("receit", receit);
+  };
+
   const handleQuote = () => {
     const amount = Number(amountFrom * 10 ** selectedTokenFrom.decimals);
     const fromToken = selectedTokenFrom.address;
@@ -103,9 +124,11 @@ const SelectToken = (props) => {
     axios
       .get(`https://api.1inch.io/v4.0/56/quote`, { params })
       .then((res) => {
-        let result = Number(res.data.toTokenAmount / 10 ** 18);
-        console.log(res.data, "handle quote response");
-        setAmountTo(result);
+        let quote = res.data;
+        let amount = Number(res.data.toTokenAmount / 10 ** 18);
+        setAmountTo(amount);
+        setQuote(quote);
+        console.log("Handle Quote is calling", quote);
       })
       .catch((err) => {
         console.log(err);
@@ -116,7 +139,6 @@ const SelectToken = (props) => {
     const takerAddress = walletAddress;
     const tokenFromAddress = selectedTokenFrom.address;
     const spenderAddress = "0x1111111254fb6c44bac0bed2854e76f90643097d";
-    const web3 = new Web3(Web3.givenProvider);
 
     const erc20ABI = [
       {
@@ -359,13 +381,13 @@ const SelectToken = (props) => {
       .then((res) => {
         let result = res.data.allowance;
         if (result > 0) {
-          console.log(result);
-          setStatusTx(true);
+          console.log("Token already approved");
+          setStatusConfirmTx(true);
         } else {
           ERC20TokenContract.methods
             .approve(spenderAddress, maxApproval)
             .send({ from: takerAddress })
-            .then((tx) => setStatusTx(tx.status))
+            .then((tx) => setStatusConfirmTx(tx.status))
             .catch((err) => console.log(err));
         }
       })
@@ -373,13 +395,40 @@ const SelectToken = (props) => {
   };
 
   const handleSwap = () => {
-    
+    handleQuote();
+    console.log("Quote is", quote);
+    let fromToken = quote.fromToken.address;
+    let toToken = quote.toToken.address;
+    let amountTrade = quote.fromTokenAmount;
+    let fromAddress = walletAddress;
+    let slippage = 1;
+    let referrerAddress = "0x4aF76c468e4a8aA90801f33C21A015FAFb9F2605";
+    let fee = 1.5;
+
+    const params = {
+      fromTokenAddress: fromToken,
+      toTokenAddress: toToken,
+      amount: amountTrade,
+      fromAddress: fromAddress,
+      slippage: slippage,
+      referrerAddress: referrerAddress,
+      fee: fee,
+    };
+
+    axios
+      .get(`https://api.1inch.io/v4.0/56/swap`, { params })
+      .then((tx) => {
+        console.log("Processing tx", tx.data);
+        setSwapData(tx.data.tx);
+        signTx();
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
     <div className="container">
       <p>Pay With</p>
-      <div className="token-from">
+      <div className="token-from" onBlur={handleQuote}>
         <div className="token-from-select">
           <Dropdown
             value={selectedTokenFrom}
@@ -404,7 +453,7 @@ const SelectToken = (props) => {
         </div>
       </div>
       <p>You'll Receive</p>
-      <div className="token-to">
+      <div className="token-to" onBlur={handleQuote}>
         <div className="token-to-select">
           <Dropdown
             value={selectedTokenTo}
@@ -427,7 +476,7 @@ const SelectToken = (props) => {
           ></InputText>
         </div>
       </div>
-      {!!statusTx ? (
+      {!!confirmTx ? (
         <button className="swap-button" onClick={handleSwap}>
           Confirm Trade
         </button>
@@ -436,6 +485,14 @@ const SelectToken = (props) => {
           Swap
         </button>
       )}
+      {!!success ? (
+        <p className="success-box">
+          Successful, check your transaction receit{" "}
+          <a href={txHash} target="_blank" rel="noreferrer">
+            here
+          </a>
+        </p>
+      ) : null}
     </div>
   );
 };
