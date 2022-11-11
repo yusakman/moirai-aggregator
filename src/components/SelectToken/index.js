@@ -9,7 +9,6 @@ import "primeflex/primeflex.css";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 
-import dataTokens from "../../const/data_tokens.json";
 import axios from "axios";
 import Web3 from "web3";
 import BigNumber from "bignumber.js";
@@ -20,30 +19,34 @@ const SelectToken = (props) => {
 
   const [selectedTokenFrom, setSelectedTokenFrom] = useState(null);
   const [selectedTokenTo, setSelectedTokenTo] = useState(null);
-  const [tokens, setTokens] = useState([]);
   const [amountFrom, setAmountFrom] = useState("");
   const [amountTo, setAmountTo] = useState("");
-  const [confirmTx, setStatusConfirmTx] = useState(false);
+  const [tokens, setTokens] = useState([]);
   const [quote, setQuote] = useState({});
   const [swapData, setSwapData] = useState({});
+  const [confirmTx, setStatusConfirmTx] = useState(false);
   const [success, setSuccess] = useState(false);
   const [txHash, setTxHash] = useState("");
 
-  const data = dataTokens.tokens;
-  const tokenAddress = Object.keys(data);
+  const testGetTokenList = () => {
+    console.log(`calling testGetTokenList`);
+    const tokenList = [];
 
-  const getTokenList = () => {
-    const tokenArr = [];
-    {
+    axios.get(`https://api.1inch.io/v4.0/56/tokens`).then((res) => {
+      console.log(`result data`, res.data.tokens);
+      let result = res.data.tokens;
+      let tokenAddress = Object.keys(result);
+
       tokenAddress.map((item) => {
-        return tokenArr.push(data[`${item}`]);
+        return tokenList.push(result[`${item}`]);
       });
-    }
-    setTokens(tokenArr);
+    });
+
+    setTokens(tokenList);
   };
 
   useEffect(() => {
-    getTokenList();
+    testGetTokenList();
   }, []);
 
   const onTokenFromChange = (e) => {
@@ -103,7 +106,7 @@ const SelectToken = (props) => {
     if (receit.status) {
       setStatusConfirmTx(false);
       setSuccess(true);
-      setTxHash(`https://bscscan.com/tx/${receit.transactionHash}`)
+      setTxHash(`https://bscscan.com/tx/${receit.transactionHash}`);
     }
     console.log("receit", receit);
   };
@@ -128,7 +131,6 @@ const SelectToken = (props) => {
         let amount = Number(res.data.toTokenAmount / 10 ** 18);
         setAmountTo(amount);
         setQuote(quote);
-        console.log("Handle Quote is calling", quote);
       })
       .catch((err) => {
         console.log(err);
@@ -394,7 +396,7 @@ const SelectToken = (props) => {
       .catch((err) => console.log(err));
   };
 
-  const handleSwap = async () => {
+  const handleSwap = () => {
     handleQuote();
     console.log("Quote is", quote);
     let fromToken = quote.fromToken.address;
@@ -419,14 +421,15 @@ const SelectToken = (props) => {
       .get(`https://api.1inch.io/v4.0/56/swap`, { params })
       .then((tx) => {
         console.log("Processing tx", tx.data);
-          setSwapData(tx.data.tx);
-          signTx();
+        setSwapData(tx.data.tx);
+        signTx();
       })
       .catch((err) => console.log(err));
   };
 
   return (
     <div className="container">
+      {console.log(`tokens setelah diupdate`, tokens)}
       <p>Pay With</p>
       <div className="token-from" onBlur={handleQuote}>
         <div className="token-from-select">
