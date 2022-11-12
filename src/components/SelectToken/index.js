@@ -404,7 +404,6 @@ const SelectToken = (props) => {
     let amountTrade = quote.fromTokenAmount;
     let fromAddress = walletAddress;
     let slippage = 1;
-    let referrerAddress = "0x4aF76c468e4a8aA90801f33C21A015FAFb9F2605";
     let fee = 1.5;
 
     const params = {
@@ -413,7 +412,6 @@ const SelectToken = (props) => {
       amount: amountTrade,
       fromAddress: fromAddress,
       slippage: slippage,
-      referrerAddress: referrerAddress,
       fee: fee,
     };
 

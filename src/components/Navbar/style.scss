@@ -1,11 +1,14 @@
 .navbar {
+  // main color
+  // background: rgb(235,212,126);
+  // background: linear-gradient(0deg, rgba(235,212,126,1) 0%, rgba(255,138,166,1) 100%);
   .navbar-nav {
     display: flex;
     justify-content: space-around;
     .logo {
       font-size: large;
-      font-weight: 900;
-      color: rgb(126, 159, 235);
+      font-weight: 1000;
+      color: rgb(23, 60, 144);
     }
 
     .user-address {
